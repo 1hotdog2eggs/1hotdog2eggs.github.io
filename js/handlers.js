@@ -1,15 +1,15 @@
 import * as PAINT from './render.js'
 import * as GLOBAL from './global.js'
 import { GetToken } from './getJWT.js';
-// import { setQueryHeader, getQueryData } from './getQueryData.js';
 
 export const handleDataPage = () => {
     //welcome message
     handleWelcomeMessage();
+
     //logout button
     handleLogoutButton();
 
-    //handle the general-info container
+    //handle the basic info container
     handleGeneralUserInfo();
 
     //handle the audit graph
@@ -122,16 +122,40 @@ const handleProgressGraph = () => {
     let xpSum = 0;
     let curveStr = `M 40,300 L`;
 
+    let xpGraph = document.getElementById("xp__progress")
     let xpCurve = document.getElementById("xp__progress__curve");
     xpCurve.setAttribute("stroke", "#1ac460")
 
     window.queryResult.data.xp_progress.forEach(element => {
         let currTimeMargin = new Date(window.queryResult.data.xp_progress[totalTransactions - 1].createdAt) - new Date(element.createdAt)
         xpSum += element.amount
-        // <text font-size="11px" stroke-width="0" fill="var(--purple2)" font-family="IBM Plex Mono" text-anchor="middle" opacity="0" x="163.77395833333333" y="150.61157781707934"></text>
-        // <circle class="animate-01" fill="var(--purple2)" stroke="var(--purple2)" cx="163.77395833333333" cy="180.61157781707934" r="0.5"></circle>
+
+        // <circle class="animate-01" cx="163.77395833333333" cy="180.61157781707934" r="0.5"></circle>
         coordY = minY - (xpSum / totalXp) * marginY
         coordX = maxX - (currTimeMargin / timeMargin) * marginX
+
+        // Create a new text element
+        const textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        textElement.setAttribute("font-size", "10px");
+        textElement.setAttribute("text-anchor", "middle");
+        textElement.setAttribute("opacity", "0");
+        textElement.setAttribute("x", `${coordX}`);
+        textElement.setAttribute("y", `${coordY - 20}`);
+
+        // Set the text content
+        textElement.textContent = element.amount;
+
+        //create a new circle element
+        const circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circleElement.setAttribute("class", "animate-01");
+        circleElement.setAttribute("opacity", "1");
+        circleElement.setAttribute("cx", coordX);
+        circleElement.setAttribute("cy", coordY);
+        circleElement.setAttribute("r", "1");
+
+        // Append the text element to your SVG container
+        xpGraph.appendChild(textElement);
+        xpGraph.appendChild(circleElement);
 
         curveStr += ` ${coordX},${coordY}`
     });

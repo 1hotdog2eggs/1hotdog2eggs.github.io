@@ -124,6 +124,7 @@ const handleProgressGraph = () => {
     let [coordX, coordY] = [0, 0];
     let xpSum = 0;
     let curveStr = `M 40,300 L`;
+    let isHovered = false;
 
     let xpGraphTitle = document.getElementById('audit__ratio__title');
     let xpGraph = document.getElementById("xp__progress")
@@ -150,7 +151,7 @@ const handleProgressGraph = () => {
             textElement.setAttribute("y", `${coordY - 20}`);
 
             // Set the text content
-            textElement.textContent = element.amount;
+            textElement.textContent = `${Math.round(element.amount / 1000)}Kb`;
 
             // Create a new circle element
             const circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -160,23 +161,20 @@ const handleProgressGraph = () => {
             circleElement.setAttribute("opacity", "1");
             circleElement.setAttribute("cx", coordX);
             circleElement.setAttribute("cy", coordY);
-            circleElement.setAttribute("r", "1.8");
+            circleElement.setAttribute("r", "1.9");
 
 
             circleElement.addEventListener('mouseover', () => {
-                // Toggle the "active" class on both circle and text elements
-                circleElement.classList.toggle("active");
+                isHovered = true;
+                // circleElement.classList.toggle("active");
                 textElement.classList.toggle("active");
-
-
                 xpGraphTitle.textContent = element.path.split("/")[3]
-                // Update the opacity based on whether the elements have the "active" class
+
                 textElement.setAttribute("opacity", textElement.classList.contains("active") ? "1" : "0");
             });
 
             circleElement.addEventListener('mouseout', () => {
-                // Toggle the "active" class on both circle and text elements
-                circleElement.classList.toggle("active");
+                // circleElement.classList.toggle("active");
                 textElement.classList.toggle("active");
 
                 setTimeout(() => {
@@ -184,7 +182,11 @@ const handleProgressGraph = () => {
                 }, 100);
 
                 setTimeout(() => {
+                    if (isHovered) {
+                        return
+                    }
                     xpGraphTitle.textContent = "XP Growth"
+
                 }, 900)
             });
 

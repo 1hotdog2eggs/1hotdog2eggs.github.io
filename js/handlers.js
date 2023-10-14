@@ -78,10 +78,12 @@ const handleGeneralUserInfo = () => {
 
 }
 
+
 const handleWelcomeMessage = () => {
     let welcomeMessage = document.getElementById('welcome__msg')
     welcomeMessage.innerHTML += `<p>Welcome</p><em>${window.queryResult.data.user_info[0].login}!</em>`
 }
+
 
 const handleAuditGraph = () => {
 
@@ -111,17 +113,19 @@ const handleAuditGraph = () => {
     auditRatioUp.setAttribute("fill", isLowRatio ? `black` : `#01b32d`)
 }
 
+
 const handleProgressGraph = () => {
     let totalXp = window.queryResult.data.total_xp.aggregate.sum.amount;
     let totalTransactions = window.queryResult.data.xp_progress.length;
     let timeMargin = new Date(window.queryResult.data.xp_progress[totalTransactions - 1].createdAt) - new Date(window.queryResult.data.xp_progress[0].createdAt)
 
-    let [minX, maxX, minY, maxY] = [40, 390, 300, 80];
+    let [minX, maxX, minY, maxY] = [60, 410, 270, 80];
     let [marginX, marginY] = [maxX - minX, minY - maxY];
     let [coordX, coordY] = [0, 0];
     let xpSum = 0;
     let curveStr = `M 40,300 L`;
 
+    let xpGraphTitle = document.getElementById('audit__ratio__title');
     let xpGraph = document.getElementById("xp__progress")
     let xpCurve = document.getElementById("xp__progress__curve");
     xpCurve.setAttribute("stroke", "#1ac460")
@@ -130,34 +134,67 @@ const handleProgressGraph = () => {
         let currTimeMargin = new Date(window.queryResult.data.xp_progress[totalTransactions - 1].createdAt) - new Date(element.createdAt)
         xpSum += element.amount
 
-        // <circle class="animate-01" cx="163.77395833333333" cy="180.61157781707934" r="0.5"></circle>
         coordY = minY - (xpSum / totalXp) * marginY
         coordX = maxX - (currTimeMargin / timeMargin) * marginX
 
-        // Create a new text element
-        const textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        textElement.setAttribute("font-size", "10px");
-        textElement.setAttribute("text-anchor", "middle");
-        textElement.setAttribute("opacity", "0");
-        textElement.setAttribute("x", `${coordX}`);
-        textElement.setAttribute("y", `${coordY - 20}`);
+        if (element.amount > 1500) {
 
-        // Set the text content
-        textElement.textContent = element.amount;
+            // Create a new text element
+            const textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            textElement.setAttribute("class", `animate-${element.id}`);
+            textElement.setAttribute("font-size", "10px");
+            textElement.setAttribute("font-weight", "600");
+            textElement.setAttribute("text-anchor", "middle");
+            textElement.setAttribute("opacity", "0");
+            textElement.setAttribute("x", `${coordX}`);
+            textElement.setAttribute("y", `${coordY - 20}`);
 
-        //create a new circle element
-        const circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circleElement.setAttribute("class", "animate-01");
-        circleElement.setAttribute("opacity", "1");
-        circleElement.setAttribute("cx", coordX);
-        circleElement.setAttribute("cy", coordY);
-        circleElement.setAttribute("r", "1");
+            // Set the text content
+            textElement.textContent = element.amount;
 
-        // Append the text element to your SVG container
-        xpGraph.appendChild(textElement);
-        xpGraph.appendChild(circleElement);
+            // Create a new circle element
+            const circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circleElement.setAttribute("class", `animate-${element.id}`);
+            circleElement.setAttribute("stroke", "#000000");
+            circleElement.setAttribute("fill", "#000000");
+            circleElement.setAttribute("opacity", "1");
+            circleElement.setAttribute("cx", coordX);
+            circleElement.setAttribute("cy", coordY);
+            circleElement.setAttribute("r", "1.8");
+
+
+            circleElement.addEventListener('mouseover', () => {
+                // Toggle the "active" class on both circle and text elements
+                circleElement.classList.toggle("active");
+                textElement.classList.toggle("active");
+
+
+                xpGraphTitle.textContent = element.path.split("/")[3]
+                // Update the opacity based on whether the elements have the "active" class
+                textElement.setAttribute("opacity", textElement.classList.contains("active") ? "1" : "0");
+            });
+
+            circleElement.addEventListener('mouseout', () => {
+                // Toggle the "active" class on both circle and text elements
+                circleElement.classList.toggle("active");
+                textElement.classList.toggle("active");
+
+                setTimeout(() => {
+                    textElement.setAttribute("opacity", textElement.classList.contains("active") ? "1" : "0");
+                }, 100);
+
+                setTimeout(() => {
+                    xpGraphTitle.textContent = "XP Growth"
+                }, 900)
+            });
+
+            // Append the text element to your SVG container
+            xpGraph.appendChild(textElement);
+            xpGraph.appendChild(circleElement);
+        }
 
         curveStr += ` ${coordX},${coordY}`
+
     });
 
     xpCurve.setAttribute("d", curveStr)

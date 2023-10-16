@@ -31,7 +31,16 @@ function GetToken() {
             window.JWT = (await response.text()).replace(/^"+|"+$/g, '');
 
 
-            window.queryResult = await QUERY.getQueryData(QUERY.setQueryHeader(window.JWT, GLOBAL.UserInfoQuery, GLOBAL.queryVariables));
+            let id = await QUERY.getUserId(window.JWT, GLOBAL.queryUserId)
+            const queryVariables =
+            {
+                rootEventId: 134,
+                userId: id
+
+            }
+
+
+            window.queryResult = await QUERY.getQueryData(QUERY.setQueryHeader(window.JWT, GLOBAL.UserInfoQuery, queryVariables));
             console.log(window.queryResult);
 
 

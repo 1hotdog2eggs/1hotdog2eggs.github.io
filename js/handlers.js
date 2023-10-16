@@ -166,7 +166,6 @@ const handleProgressGraph = () => {
 
             circleElement.addEventListener('mouseover', () => {
                 isHovered = true;
-                // circleElement.classList.toggle("active");
                 textElement.classList.toggle("active");
                 xpGraphTitle.textContent = element.path.split("/")[3]
 
@@ -174,20 +173,24 @@ const handleProgressGraph = () => {
             });
 
             circleElement.addEventListener('mouseout', () => {
-                // circleElement.classList.toggle("active");
+                // isHovered = false;
+
                 textElement.classList.toggle("active");
 
                 setTimeout(() => {
                     textElement.setAttribute("opacity", textElement.classList.contains("active") ? "1" : "0");
                 }, 100);
 
-                setTimeout(() => {
-                    if (isHovered) {
-                        return
-                    }
-                    xpGraphTitle.textContent = "XP Growth"
 
+
+                setTimeout(() => {
+                    isHovered = false;
                 }, 900)
+
+                if (!isHovered) {
+                    xpGraphTitle.textContent = "XP Growth"
+                }
+
             });
 
             // Append the text element to your SVG container

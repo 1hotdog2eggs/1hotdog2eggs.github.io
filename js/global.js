@@ -59,7 +59,7 @@ export const dataPage = `<main id="main__holder">
 
 
 
-<svg id="audit__ratio__graph" width="500" height="500">
+<svg id="audit__ratio__graph" width="450" height="500">
 
   <rect id="graph__down" x="40" y="115" height="10" />
   <rect id="graph__up" x="40" y="165"  height="10" />
@@ -164,9 +164,11 @@ query ($userId: Int!, $rootEventId: Int!) {
 `;
 
 
-export const queryVariables =
-{
-  rootEventId: 134,
-  userId: 3135
-
+export const queryUserId = `
+query{
+  user{
+    id
+  }
 }
+`
+

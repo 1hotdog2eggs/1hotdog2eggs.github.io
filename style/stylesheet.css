@@ -167,8 +167,8 @@ header {
 
 .user__stats {
     display: flex;
-    justify-content: space-between;
-    width: auto;
+    justify-content: space-around;
+    width: 1070px;
     height: 100%;
     margin-top: 40px;
 
